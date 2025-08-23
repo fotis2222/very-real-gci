@@ -1,0 +1,104 @@
+﻿// i keep unused imports
+using System.IO.Compression;
+using System.Numerics;
+using Raylib_cs;
+
+class Program
+{
+
+    static Camera3D camera = new Camera3D
+    {
+        Position = new Vector3(0.0f, 2.5f, 15.0f),
+        Target = new Vector3(0.0f, 0.0f, 0.0f),
+        Up = new Vector3(0.0f, 1.0f, 0.0f),
+        FovY = 90.0f,
+        Projection = CameraProjection.Perspective
+    };
+
+    static Random random = new();
+    static GrassSpawner gs = new();
+    static Functions f = new();
+    static Game g = new();
+
+    static void Main()
+    {
+        const int screenWidth = 1920;
+        const int screenHeight = 1080;
+
+        Raylib.InitWindow(screenWidth, screenHeight, "what am i doing with my life");
+
+        Raylib.DisableCursor();
+
+        Raylib.SetTargetFPS(60);
+
+        // Main game loop
+        while (!Raylib.WindowShouldClose())
+        {
+            Raylib.UpdateCamera(ref camera, CameraMode.FirstPerson);
+            Process();
+
+            Raylib.BeginDrawing();
+            Raylib.ClearBackground(Color.RayWhite);
+
+            Raylib.BeginMode3D(camera);
+
+            Draw();
+
+            Raylib.EndMode3D();
+
+            Draw2D();
+
+            Raylib.DrawText("touch grass simulator", 10, 40, 20, Color.DarkGray);
+            Raylib.DrawFPS(10, 10);
+
+            Raylib.EndDrawing();
+        }
+
+        Raylib.CloseWindow();
+    }
+
+    static void Draw(/* inline comment aka ugly */)
+    {
+        // grass field
+        Raylib.DrawCube(new Vector3(0, 0, 0), 15, 0.3f, 15, new Color(100, 255, 100));
+
+        // floor you stand on
+        Raylib.DrawPlane(new Vector3(0, 0, 0), new Vector2(50, 50), Color.DarkGreen);
+
+        // draw the grass
+        gs.DrawGrass();
+
+        // hit the griddy (nah fr)
+        // Raylib.DrawGrid(100, 1.0f);
+    }
+
+    static void Draw2D()
+    {
+        // grass meter box
+        Raylib.DrawRectangle(500, 20, 920, 150, Color.Green);
+
+        int textWidth = Raylib.MeasureText($"{g.grass} Grass", 40);
+
+        Raylib.DrawText($"{g.grass} Grass", 500 + (920 - textWidth)/2, 20 + (150 - 40)/2, 40, Color.Black);
+
+    }
+
+    static void Process()
+    {
+        if (gs.grass.Count < 1)
+        {
+            gs.SpawnGrass();
+        }
+        gs.CutGrass(camera, g);
+    }
+
+    static BoundingBox GetCameraBoundingBox(Camera3D camera)
+    {
+        Vector3 cameraSize = new(1, 1, 1);
+
+        Vector3 min = camera.Position - cameraSize / 2;
+        Vector3 max = camera.Position + cameraSize / 2;
+
+        return new BoundingBox(min, max);
+    }
+}
