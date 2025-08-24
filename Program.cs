@@ -20,6 +20,7 @@ class Program
     static Functions f = new();
     static Game g = new();
     static bool free = false;
+    static Parallelepiped test = new(new Vector3(20, 1, 20), new Vector3(2, 2, 2), Color.Red);
 
     static void Main()
     {
@@ -31,13 +32,13 @@ class Program
         Raylib.DisableCursor();
 
         Raylib.SetTargetFPS(60);
-        
+
         // Main game loop
         while (!Raylib.WindowShouldClose())
         {
             Raylib.UpdateCamera(ref camera, free ? CameraMode.Free : CameraMode.FirstPerson);
             Process();
-            
+
             Raylib.BeginDrawing();
             Raylib.ClearBackground(Color.RayWhite);
 
@@ -71,6 +72,8 @@ class Program
 
         // hit the griddy (nah fr)
         // Raylib.DrawGrid(100, 1.0f);
+
+        test.Draw();
     }
 
     static void Draw2D()
