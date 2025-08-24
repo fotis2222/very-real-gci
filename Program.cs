@@ -19,6 +19,7 @@ class Program
     static GrassSpawner gs = new();
     static Functions f = new();
     static Game g = new();
+    static bool free = false;
 
     static void Main()
     {
@@ -30,13 +31,13 @@ class Program
         Raylib.DisableCursor();
 
         Raylib.SetTargetFPS(60);
-
+        
         // Main game loop
         while (!Raylib.WindowShouldClose())
         {
-            Raylib.UpdateCamera(ref camera, CameraMode.FirstPerson);
+            Raylib.UpdateCamera(ref camera, free ? CameraMode.Free : CameraMode.FirstPerson);
             Process();
-
+            
             Raylib.BeginDrawing();
             Raylib.ClearBackground(Color.RayWhite);
 
@@ -63,7 +64,7 @@ class Program
         Raylib.DrawCube(new Vector3(0, 0, 0), 15, 0.3f, 15, new Color(100, 255, 100));
 
         // floor you stand on
-        Raylib.DrawPlane(new Vector3(0, 0, 0), new Vector2(50, 50), Color.DarkGreen);
+        Raylib.DrawPlane(new Vector3(0, 0, 0), new Vector2(100, 100), Color.DarkGreen);
 
         // draw the grass
         gs.DrawGrass();
@@ -79,7 +80,7 @@ class Program
 
         int textWidth = Raylib.MeasureText($"{g.grass} Grass", 40);
 
-        Raylib.DrawText($"{g.grass} Grass", 500 + (920 - textWidth)/2, 20 + (150 - 40)/2, 40, Color.Black);
+        Raylib.DrawText($"{g.grass} Grass", 500 + (920 - textWidth) / 2, 20 + (150 - 40) / 2, 40, Color.Black);
 
     }
 
@@ -90,6 +91,11 @@ class Program
             gs.SpawnGrass();
         }
         gs.CutGrass(camera, g);
+
+        if (Raylib.IsKeyPressed(KeyboardKey.Q))
+        {
+            free = !free;
+        }
     }
 
     static BoundingBox GetCameraBoundingBox(Camera3D camera)
