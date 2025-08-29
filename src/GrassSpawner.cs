@@ -5,6 +5,7 @@ class GrassSpawner
 {
     private Random random = new();
     public List<Parallelepiped> grass = [];
+    static Sound cut = Raylib.LoadSound("assets/sfx/cut.mp3");
 
     public void DrawGrass()
     {
@@ -31,6 +32,7 @@ class GrassSpawner
             {
                 grass.RemoveAt(i);
                 g.grass += 1;
+                Raylib.PlaySound(cut);
             }
         }
     }

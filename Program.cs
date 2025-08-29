@@ -3,6 +3,12 @@ using System.IO.Compression;
 using System.Numerics;
 using Raylib_cs;
 
+enum GameScreens
+{
+    None,
+    UpgradeScreen
+}
+
 class Program
 {
 
@@ -22,12 +28,16 @@ class Program
     static bool free = false;
     static Parallelepiped test = new(new Vector3(20, 1, 20), new Vector3(2, 2, 2), Color.Red);
 
+    const int screenWidth = 1920;
+    const int screenHeight = 1080;
+
+    static GameScreens screen = GameScreens.None;
+    
+
     static void Main()
     {
-        const int screenWidth = 1920;
-        const int screenHeight = 1080;
-
         Raylib.InitWindow(screenWidth, screenHeight, "what am i doing with my life");
+        Raylib.InitAudioDevice();
 
         Raylib.DisableCursor();
 
@@ -50,12 +60,13 @@ class Program
 
             Draw2D();
 
-            Raylib.DrawText("touch grass simulator", 10, 40, 20, Color.DarkGray);
+
             Raylib.DrawFPS(10, 10);
 
             Raylib.EndDrawing();
         }
 
+        Raylib.CloseAudioDevice();
         Raylib.CloseWindow();
     }
 
@@ -78,12 +89,19 @@ class Program
 
     static void Draw2D()
     {
+        Raylib.DrawText($"[{camera.Position.X:F0}, {camera.Position.Z:F0}]", 10, 40, 20, Color.DarkGray);
+
         // grass meter box
         Raylib.DrawRectangle(500, 20, 920, 150, Color.Green);
 
         int textWidth = Raylib.MeasureText($"{g.grass} Grass", 40);
 
         Raylib.DrawText($"{g.grass} Grass", 500 + (920 - textWidth) / 2, 20 + (150 - 40) / 2, 40, Color.Black);
+
+        if (screen == GameScreens.UpgradeScreen)
+        {
+            Raylib.DrawRectangle(100, 100, screenWidth - 200, screenHeight - 200, Color.Green);
+        }
 
     }
 
